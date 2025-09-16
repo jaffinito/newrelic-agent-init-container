@@ -32,6 +32,13 @@ on:
         required: false
         type: boolean
         default: false
+    secrets:
+      REGISTRY_LOGIN_SERVER:
+        required: true
+      REGISTRY_USERNAME:
+        required: true
+      REGISTRY_PASSWORD:
+        required: true
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -67,7 +74,11 @@ jobs:
           tags: ${{ steps.version.outputs.tags }}
 
       - name: Login to Azure Container Registry
-        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ${{ secrets.REGISTRY_LOGIN_SERVER }} -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
+        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # 3.5.0
+        with:
+          registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Build and publish init container image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # 6.18.0
