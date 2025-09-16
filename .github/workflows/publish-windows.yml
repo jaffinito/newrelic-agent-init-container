@@ -38,7 +38,7 @@ permissions: read-all
 
 jobs:
   publish:
-    runs-on: windwows-latest
+    runs-on: windows-latest
 
     steps:
       - name: Harden Runner
