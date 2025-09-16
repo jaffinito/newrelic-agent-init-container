@@ -9,31 +9,35 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  pull_request:
-    paths:
-      - 'src/dotnet/**'
-      - 'tests/dotnet/**'
-      - '.github/workflows/dotnet.yml'
-      - '.github/workflows/publish.yml'
-      - '.github/workflows/test.yml'
-      - '.github/actions/**'
-  push:
-    paths:
-      - 'src/dotnet/**'
-      - 'tests/dotnet/**'
-      - '.github/workflows/dotnet.yml'
-      - '.github/workflows/publish.yml'
-      - '.github/workflows/test.yml'
-      - '.github/actions/**'
-    branches:
-      - main
-    # Do not run when a tag is created.
-    tags-ignore:
-      - "**"
+  # pull_request:
+  #   paths:
+  #     - 'src/dotnet/**'
+  #     - 'src/dotnet-windows/**'
+  #     - 'tests/dotnet/**'
+  #     - '.github/workflows/dotnet.yml'
+  #     - '.github/workflows/publish.yml'
+  #     - '.github/workflows/publish-windows.yml'
+  #     - '.github/workflows/test.yml'
+  #     - '.github/actions/**'
+  # push:
+  #   paths:
+  #     - 'src/dotnet/**'
+  #     - 'tests/dotnet/**'
+  #     - 'src/dotnet-windows/**'
+  #     - '.github/workflows/dotnet.yml'
+  #     - '.github/workflows/publish.yml'
+  #     - '.github/workflows/publish-windows.yml'
+  #     - '.github/workflows/test.yml'
+  #     - '.github/actions/**'
+  #   branches:
+  #     - main
+  #   # Do not run when a tag is created.
+  #   tags-ignore:
+  #     - "**"
   release:
     types:
       - published
-  workflow_call:
+  # workflow_call:
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -47,7 +51,7 @@ jobs:
       INITCONTAINER_LANGUAGE: dotnet
       TEST_APP_BUILD_ARGS: TARGETARCH=amd64
 
-  publish:
+  publish-linux:
     if: github.event_name == 'release' && endsWith(github.ref, '_dotnet') # Skip everything if this isn't .NET
     needs: test
     uses: ./.github/workflows/publish.yml
@@ -55,3 +59,22 @@ jobs:
     with:
       INITCONTAINER_LANGUAGE: dotnet
       ARCHITECTURE: linux/amd64,linux/arm64
+
+  publish-windows2022:
+    if: github.event_name == 'release' && endsWith(github.ref, '_dotnet') # Skip everything if this isn't .NET
+    needs: test
+    uses: ./.github/workflows/publish-windows.yml
+    secrets: inherit
+    with:
+      INITCONTAINER_LANGUAGE: dotnet-windows
+      TARGETARCH: 2022
+
+  publish-windows2025:
+    if: github.event_name == 'release' && endsWith(github.ref, '_dotnet') # Skip everything if this isn't .NET
+    needs: test
+    uses: ./.github/workflows/publish-windows.yml
+    secrets: inherit
+    with:
+      INITCONTAINER_LANGUAGE: dotnet-windows
+      TARGETARCH: 2025
+
