@@ -82,15 +82,10 @@ jobs:
 
       - name: Build and publish init container image
         run: |
-          Write-Host "Start"
-          $env:LABELS="--label " + (($env:DOCKER_METADATA_OUTPUT_LABELS -split "`n") -join " --label ")
-          Write-Host "$env:LABELS"
-          Write-Host "end"
-          exit 0
           cd src/${{ inputs.INITCONTAINER_LANGUAGE }}/
 
           # Set up labels variable
-          $env:LABELS="--label " + ($env:DOCKER_METADATA_OUTPUT_LABELS -split "`n") -join " --label "
+          $env:LABELS="--label " + (($env:DOCKER_METADATA_OUTPUT_LABELS -split "`n") -join " --label ")
 
           # Build container
           $env:IMAGE_NAME="local/${{ format('newrelic-{0}{1}-init', inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}:latest"
