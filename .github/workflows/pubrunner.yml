@@ -18,9 +18,16 @@ on:
 permissions: read-all
 
 jobs:
-  publish-windows:
+  publish-windows2022:
     uses: ./.github/workflows/publish-windows.yml
     secrets: inherit
     with:
       INITCONTAINER_LANGUAGE: dotnet-windows
       TARGETARCH: 2022
+
+  publish-windows2025:
+    uses: ./.github/workflows/publish-windows.yml
+    secrets: inherit
+    with:
+      INITCONTAINER_LANGUAGE: dotnet-windows
+      TARGETARCH: 2025
