@@ -80,10 +80,30 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      - name: Do it myself
+      - name: Build and publish init container image
         run: |
+          # build labels section
+          if (${{ steps.meta.outputs.labels != '' }}) {
+            $env:LABELS="--labels " + ((${{ steps.meta.outputs.labels }} -split "`n") -join " --label ")
+          }
+
+          # Build container
+          $env:IMAGE_NAME="local/${{ format('newrelic-{0}{1}-init', inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}:latest"
           cd src/${{ inputs.INITCONTAINER_LANGUAGE }}/
-          docker build --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t local/${{format('newrelic-{0}{1}-init', inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}:latest .
+          docker build $env:LABELS --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME .
+          
+          # tag container
+          $env:TAGS="${{ steps.meta.outputs.tags }}`n" -split "`n"
+          foreach ($tag in $env:TAGS) {
+            if ($tag -ne "") {
+              docker tag $env:IMAGE_NAME $tag
+            }
+          }
+
+          docker images
+          # push container with all tags
+          # docker image push --all-tags ${{ format('{0}/newrelic-{1}{2}-init', secrets.REGISTRY_LOGIN_SERVER ,inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}
+
 
       # - name: Build and publish init container image
       #   uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # 6.18.0
