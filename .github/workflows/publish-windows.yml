@@ -83,8 +83,8 @@ jobs:
       - name: Build and publish init container image
         run: |
           Write-Host "Start"
-          $stringWithVisibleControlChars = $env:DOCKER_METADATA_OUTPUT_LABELS -replace "`t", "\t" -replace "`n", "\n" -replace "`r", "\r"
-          Write-Host "$stringWithVisibleControlChars"
+          $env:LABELS="--label " + ($env:DOCKER_METADATA_OUTPUT_LABELS -split "`n") -join " --label "
+          Write-Host "$env:LABELS"
           Write-Host "end"
           exit 0
           cd src/${{ inputs.INITCONTAINER_LANGUAGE }}/
