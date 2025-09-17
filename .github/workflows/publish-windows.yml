@@ -82,6 +82,10 @@ jobs:
 
       - name: Build and publish init container image
         run: |
+          Write-Host "Start"
+          Write-Host "$env:DOCKER_METADATA_OUTPUT_LABELS"
+          Write-Host "end"
+          exit 0
           cd src/${{ inputs.INITCONTAINER_LANGUAGE }}/
 
           # Set up labels variable
