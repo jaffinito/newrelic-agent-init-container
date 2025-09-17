@@ -82,7 +82,7 @@ jobs:
 
       - name: Build and publish init container image
         run: |
-          Get-ChildItem Env:
+          write-host "$DOCKER_METADATA_OUTPUT_TAGS"
           exit 0
 
           cd src/${{ inputs.INITCONTAINER_LANGUAGE }}/
