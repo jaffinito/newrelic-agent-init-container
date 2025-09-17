@@ -102,8 +102,11 @@ jobs:
           
           Write-Host "docker build $env:LABELS --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME ."
           #docker build $env:LABELS --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME .
-          docker build --label fred=santa --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME .
-          docker build --label "joe=coffee" --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME .
+
+          Write-Host "Tester"
+          docker build --label org.opencontainers.image.created=2025-09-17T20:35:37.731Z --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME .
+
+          exit 0
 
           # tag container
           foreach ($tag in ($env:DOCKER_METADATA_OUTPUT_TAGS -split "`n")) {
