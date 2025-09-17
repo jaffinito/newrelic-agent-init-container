@@ -87,15 +87,22 @@ jobs:
           cd src/${{ inputs.INITCONTAINER_LANGUAGE }}/
 
           # Set up labels variable
-          $env:LABELS="--label " + (($env:DOCKER_METADATA_OUTPUT_LABELS -split "`n") -join " --label ")
+          # $env:LABELS="--label " + (($env:DOCKER_METADATA_OUTPUT_LABELS -split "`n") -join " --label ")
+          foreach ($label in ($env:DOCKER_METADATA_OUTPUT_LABELS -split "`n")) {
+            if ($label -ne "") {
+              if ($label[-1] -eq "=") {
+                $label = $label.Substring(0, $label.Length - 1)
+              }
+              
+              $env:LABELS=$env:LABELS + " --label `"" + $label + "`""
+            }
+          }
 
           # Build container
           $env:IMAGE_NAME="local/${{ format('newrelic-{0}{1}-init', inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}:latest"
           
           Write-Host "docker build $env:LABELS --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME ."
-          # docker build $env:LABELS --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME .
-          docker build --label "fred=santa" --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME .
-
+          docker build $env:LABELS --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME .
 
           # tag container
           foreach ($tag in ($env:DOCKER_METADATA_OUTPUT_TAGS -split "`n")) {
