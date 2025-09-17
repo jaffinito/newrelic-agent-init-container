@@ -83,7 +83,7 @@ jobs:
       - name: Build and publish init container image
         run: |
           Write-Host "Start"
-          $env:LABELS="--label " + ($env:DOCKER_METADATA_OUTPUT_LABELS -split "`n") -join " --label "
+          $env:LABELS="--label " + (($env:DOCKER_METADATA_OUTPUT_LABELS -split "`n") -join " --label ")
           Write-Host "$env:LABELS"
           Write-Host "end"
           exit 0
