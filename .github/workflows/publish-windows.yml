@@ -82,12 +82,9 @@ jobs:
 
       - name: Build and publish init container image
         run: |
-          docker version
-
           cd src/${{ inputs.INITCONTAINER_LANGUAGE }}/
 
           # Set up labels variable
-          # $env:LABELS="--label " + (($env:DOCKER_METADATA_OUTPUT_LABELS -split "`n") -join " --label ")
           foreach ($label in ($env:DOCKER_METADATA_OUTPUT_LABELS -split "`n")) {
             if ($label -ne "") {
               if ($label[-1] -eq "=") {
@@ -97,6 +94,8 @@ jobs:
               $env:LABELS=$env:LABELS + " --label `"" + $label + "`""
             }
           }
+
+          $env:LABELS=$env:LABELS.TrimStart()
 
           # Build container
           $env:IMAGE_NAME="local/${{ format('newrelic-{0}{1}-init', inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}:latest"
