@@ -13,10 +13,6 @@ on:
         description: "Target Windows architecture for the build (e.g. 2022, 2025)"
         required: true
         type: string
-      BUILD_ARGS:
-        required: false
-        type: string
-        default: ""
       DOCKER_IMAGE_NAME:
         description: "Name for the published docker image, defaults to newrelic/newrelic-<INITCONTAINER_LANGUAGE>-init"
         required: false
@@ -107,6 +103,5 @@ jobs:
             }
           }
 
-          docker images
           # push container with all tags
-          # docker image push --all-tags ${{ format('{0}/newrelic-{1}{2}-init', secrets.REGISTRY_LOGIN_SERVER ,inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}
+          docker image push --all-tags ${{ format('{0}/newrelic-{1}{2}-init', secrets.REGISTRY_LOGIN_SERVER ,inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}
