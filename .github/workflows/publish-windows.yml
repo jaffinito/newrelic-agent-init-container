@@ -82,10 +82,8 @@ jobs:
 
       - name: Build and publish init container image
         run: |
-          # build labels section
-          if (${{ steps.meta.outputs.labels != '' }}) {
-            $env:LABELS="--labels " + ((${{ steps.meta.outputs.labels }} -split "`n") -join " --label ")
-          }
+          # Set up labels variable
+          $env:LABELS="--label " + (($DOCKER_METADATA_OUTPUT_LABELS -split "`n") -join " --label ")
 
           # Build container
           $env:IMAGE_NAME="local/${{ format('newrelic-{0}{1}-init', inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}:latest"
@@ -93,8 +91,7 @@ jobs:
           docker build $env:LABELS --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME .
           
           # tag container
-          $env:TAGS="${{ steps.meta.outputs.tags }}`n" -split "`n"
-          foreach ($tag in $env:TAGS) {
+          foreach ($tag in $DOCKER_METADATA_OUTPUT_TAGS) {
             if ($tag -ne "") {
               docker tag $env:IMAGE_NAME $tag
             }
