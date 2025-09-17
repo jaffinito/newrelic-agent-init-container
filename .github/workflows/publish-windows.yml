@@ -91,7 +91,7 @@ jobs:
                 $label = $label.Substring(0, $label.Length - 1)
               }
               
-              $env:LABELS=$env:LABELS + " --label `"'$label'`""
+              $env:LABELS=$env:LABELS + " --label $label"
             }
           }
 
@@ -101,7 +101,7 @@ jobs:
           $env:IMAGE_NAME="local/${{ format('newrelic-{0}{1}-init', inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}:latest"
           
           Write-Host "docker build $env:LABELS --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME ."
-          docker build $env:LABELS --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME .
+          docker build "$env:LABELS" --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t $env:IMAGE_NAME .
 
           # tag container
           foreach ($tag in ($env:DOCKER_METADATA_OUTPUT_TAGS -split "`n")) {
