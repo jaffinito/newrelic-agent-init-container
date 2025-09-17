@@ -68,7 +68,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # 5.8.0
         with:
-          images: ${{ inputs.DOCKER_IMAGE_NAME || format('newrelic/newrelic-{0}{1}-init', inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}
+          images: ${{ inputs.DOCKER_IMAGE_NAME || format('{0}/newrelic-{1}{2}-init', secrets.REGISTRY_LOGIN_SERVER ,inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }} # TODO: Needs to be newrelic/ in prod!!
           flavor: |
             latest=false
           tags: ${{ steps.version.outputs.tags }}
@@ -80,20 +80,19 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      - name: Lame docker
+      - name: Do it myself
         run: |
-          echo ${{ steps.meta.outputs.tags }}
-          echo "-----------------------------------"
-          echo ${{ steps.meta.outputs.labels }}
+          cd src/${{ inputs.INITCONTAINER_LANGUAGE }}/
+          docker build --build-arg TARGETARCH=${{ inputs.TARGETARCH }} --build-arg AGENT_VERSION=${{ steps.version.outputs.agent_version }} -t local/${{format('newrelic-{0}{1}-init', inputs.INITCONTAINER_LANGUAGE, inputs.TARGETARCH) }}:latest .
 
-      - name: Build and publish init container image
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # 6.18.0
-        with:
-          push: true
-          context: src/${{ inputs.INITCONTAINER_LANGUAGE }}/
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            AGENT_VERSION=${{ steps.version.outputs.agent_version }}
-            TARGETARCH=${{ inputs.TARGETARCH }}
-            ${{ inputs.BUILD_ARGS }}
+      # - name: Build and publish init container image
+      #   uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # 6.18.0
+      #   with:
+      #     push: true
+      #     context: src/${{ inputs.INITCONTAINER_LANGUAGE }}/
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     build-args: |
+      #       AGENT_VERSION=${{ steps.version.outputs.agent_version }}
+      #       TARGETARCH=${{ inputs.TARGETARCH }}
+      #       ${{ inputs.BUILD_ARGS }}
